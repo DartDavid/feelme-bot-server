@@ -55,21 +55,26 @@ bot.launch()
       { command: 'params', description: 'Параметры' },
       { command: 'buffs', description: 'Усиления' },
       { command: 'debuffs', description: 'Ослабления' }
-    ]);
+    ]).catch(err => console.error('Error setting commands:', err));
   })
   .catch((err) => {
     if (err.description && err.description.includes('Conflict')) {
       console.error('--- ERROR 409: CONFLICT ---');
       console.error('Бот уже запущен в другом месте (например, на вашем ПК).');
       console.error('Выключите все локальные копии бота и перезапустите сервер.');
+      process.exit(1);
     } else {
       console.error('Критическая ошибка запуска:', err);
+      process.exit(1);
     }
   });
 
 // Health check for Render
 const http = require('http');
-http.createServer((req, res) => { res.writeHead(200); res.end('Bot is running'); }).listen(process.env.PORT || 3000);
+http.createServer((req, res) => { 
+  res.writeHead(200); 
+  res.end('Bot is running'); 
+}).listen(process.env.PORT || 3000);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
